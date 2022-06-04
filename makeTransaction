@@ -6,7 +6,6 @@ read -p "Do you want to withdraw[w] or deposit[d]?" ques
 if [[ "$ques" == "w" ]]; then
 	while :
 	do
-		echo hello
 		read -p "How much do you want to withdraw?(Enter non number to quit)" ans
 		if [[ -n ${ans//[0-9]/} ]]; then
     		exit 0
