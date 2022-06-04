@@ -1,0 +1,23 @@
+#! /bin/bash
+sudo useradd -m CEO
+while IFS= read -a k ; 
+do 
+chmod 400 /home/$k/*.txt 
+IFS=$' ' groups=( $(id -nG $k) )
+for group in "${groups[@]}"; do
+	if [[ $group =~ Branch ]]
+	then 
+	sudo setfacl -m "BranchManager${group:0 -1}":rw /home/$k/Current_Balance.txt
+	sudo setfacl -m "BranchManager${group:0 -1}":rw /home/$k/Transaction_History.txt
+	sudo setfacl -m "BranchManager${group:0 -1}":rwX -R /home/$k
+	sudo setfacl -m CEO:r /home/$k/Current_Balance.txt
+	sudo setfacl -m CEO:r /home/$k/Transaction_History.txt
+	sudo setfacl -m CEO:rX -R /home/$k
+	sudo setfacl -m CEO:rX -R /home/"BranchManager${group:0 -1}"
+	sudo setfacl -m CEO:r /home/"BranchManager${group:0 -1}"/Branch_Current_Balance.txt
+	sudo setfacl -m CEO:r /home/"BranchManager${group:0 -1}"/Branch_Transaction_History.txt
+	fi
+done
+sudo setfacl -d -m CEO:r /home/$k
+done < <(cat /etc/passwd | cut -d: -f1 | awk '/UserAcc/ { print }' );
+

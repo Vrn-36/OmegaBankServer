@@ -1,0 +1,11 @@
+#! /bin/bash
+while IFS= read -a BMN ;
+do
+path="/etc/cron.d/allotinterest$BMN"
+cat > $path << EOF
+SHELL=/bin/bash 
+PATH=/sbin:/bin:/usr/sbin:/usr/bin 
+MAILTO=root HOME=/  
+0 0 * * * BranchManager$BMN /home/BranchManager$BMN/allotInterest
+EOF
+done < <(cat /etc/group | cut -d: -f1 | awk '/BranchManager/ { print }' | grep -o '.$');
