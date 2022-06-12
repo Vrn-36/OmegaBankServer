@@ -1,8 +1,5 @@
 # OmegaBankServer
 Delta Inductions Task Submission for SysAd Domain
 
-
-Although I tried, I couldn't implement aliasing for the updateBranch, allotInterest and makeTransaction scripts.
-For updateBranch script, I had to run the command as a BranchManager but I couldn't sudo su into that user via aliases. However, the functionality is there and, ./updateBranch will properly run if we just sudo into the BranchManager account via the shell.
-As for allotInterest script, I have created a createCronJob script that will run a cron task everyday at midnight, and would allot interestss to users accordingly. The createCron script too, is to be run with sudo.
-For makeTransaction, similar to updateBranch , I had to sudo into anoter user, which I couldn't do with aliasing. However, each user has the functionality and once sudo'ed into the UserAcc, one can access the makeTransacion script.
+Aliasing for updateBranch and makeTransaction is partial. 
+The alias would sign in as root from where we can 'exit' and then type in the password (pass12345) to get into the BranchManager1's/UserAcc1's account. Then, we can run the ./updateBranch / ./makeTransaction script. Alternatively, one can directly sudo into the Branch Manager's / User's account and then run the script from there.
