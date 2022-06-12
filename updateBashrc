@@ -1,0 +1,10 @@
+#! /bin/bash
+chmod u+x genUser permit 
+echo 'alias genUser="./genUser"' >> ~/.bashrc
+echo 'alias permit="sudo ./permit"' >> ~/.bashrc
+#'$bash -c $"shopt -s expand_aliases; alias updateBranch='sudo su;su - BranchManager1;./updateBranch'\n updateBranch'
+shopt -s expand_aliases
+echo 'alias updateBranch="su BranchManager1"' >> ~/.bashrc
+echo 'alias allotInterest="sudo ./createCronJob"' >> ~/.bashrc
+echo 'alias makeTransaction="su - UserAcc1"' >> ~/.bashrc
+

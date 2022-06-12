@@ -1,0 +1,69 @@
+#! /bin/bash
+sudo touch /etc/skel/Current_Balance.txt /etc/skel/Transaction_History.txt /etc/skel/makeTransaction
+sudo chmod o+w /etc/skel/makeTransaction /etc/skel/Current_Balance.txt
+sudo cat ./makeTransaction > /etc/skel/makeTransaction
+sudo echo 500 > /etc/skel/Current_Balance.txt
+sudo chmod o-w /etc/skel/makeTransaction /etc/skel/Current_Balance.txt
+arg1=${1:-nothing}
+if [ "$arg1" != "nothing" ]
+	then
+	while IFS=' ' read -r line;
+		do 
+		read -ra array <<< "$line"
+		sudo groupadd -f "${array[1]}"
+		num=$(echo "${array[0]}" | grep -o '....$' | xargs -I x expr x + 0)
+		username="UserAcc$num"
+		sudo useradd -m $username
+		sudo echo -e 'pass12345\npass12345\n' | sudo passwd --quiet $username
+		sudo chmod 500 /home/"$username"/makeTransaction
+		sudo usermod -a -G "${array[1]}" "$username" 
+		if [ "${array[2]}" != "-" ]
+			then sudo groupadd -f "${array[2]}"
+			sudo usermod -a -G "${array[2]}" "$username" 
+		fi
+		if [ "${array[3]}" != "-" ]
+			then sudo groupadd -f "${array[3]}"
+			sudo usermod -a -G "${array[3]}" "$username" 
+		fi 
+		if [ "${array[4]}" != "-" ]
+			then sudo groupadd -f "${array[4]}" 
+			sudo usermod -a -G "${array[4]}" "$username" 
+		fi
+	done<$arg1
+else
+	read -p "Enter number of users you want to add: " no_of_users
+	for i in $(seq $no_of_users); do
+		echo "UserAccX BranchY residence_status age_status legacy_or_not"
+		read -p "Enter data in specified format:" data
+		read -ra array <<< "$data"
+		sudo groupadd -f "${data[1]}"
+		sudo useradd -m -g "${data[1]}" "${data[0]}" 
+		sudo echo -e 'pass12345\npass12345\n' | sudo passwd --quiet ${data[0]}
+		if [ "${data[2]}" != "-" ]
+			then sudo groupadd -f "${data[2]}"
+			sudo usermod -a -G "${data[2]}" "${data[0]}" 
+		fi
+		if [ "${data[3]}" != "-" ]
+			then sudo groupadd -f "${data[3]}"
+			sudo usermod -a -G "${data[3]}" "${data[0]}" 
+		fi 
+		if [ "${data[4]}" != "-" ]
+			then sudo groupadd -f "${data[4]}" 
+			sudo usermod -a -G "${data[4]}" "${data[0]}" 
+		fi
+	 done
+fi
+sudo rm /etc/skel/*
+sudo touch /etc/skel/Branch_Current_Balance.txt /etc/skel/Branch_Transaction_History.txt /etc/skel/Daily_Interest_Rates.txt /etc/skel/updateBranch /etc/skel/allotInterest
+sudo chmod o+w /etc/skel/updateBranch /etc/skel/Daily_Interest_Rates.txt /etc/skel/allotInterest
+sudo cat ./updateBranch > /etc/skel/updateBranch
+sudo cat ./Daily_Interest_Rates.txt > /etc/skel/Daily_Interest_Rates.txt
+sudo cat ./allotInterest > /etc/skel/allotInterest
+sudo chmod o-w /etc/skel/updateBranch /etc/skel/Daily_Interest_Rates.txt /etc/skel/allotInterest
+while IFS= read -a user ;
+do
+	sudo useradd -m $user
+	sudo echo -e 'pass12345\npass12345\n' | sudo passwd --quiet $user
+done < <(cat /etc/group | cut -d: -f1 | awk '/Branch/ { print }'| sed 's/Branch//'| awk '{print "BranchManager" $1}')
+cat /etc/group | cut -d: -f1 | awk '/BranchManager/ { print }'| xargs -I x sudo chmod 700 /home/x/updateBranch
+sudo rm /etc/skel/*
